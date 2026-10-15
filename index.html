@@ -1,405 +1,282 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#090b10">
-<title>DarkGPT — AI Chat</title>
-<style>
-:root {
-  color-scheme: dark;
-  --bg: #090b10;
-  --panel: #131722;
-  --line: #292f40;
-  --purple: #9060ff;
-  --text: #f4f5fc;
-  --muted: #9ba5ba;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  color: var(--text);
-  font: 16px/1.5 system-ui, sans-serif;
-}
-header {
-  height: 66px;
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--line);
-  background: #0d1018;
-}
-.brand { display: flex; align-items: center; gap: 10px; font-size: 23px; font-weight: 850; }
-.logo {
-  width: 37px; height: 37px;
-  display: grid; place-items: center;
-  border-radius: 12px;
-  color: white;
-  background: linear-gradient(135deg, #c2a5ff, #6733ed);
-}
-.accent { color: #ad91ff; }
-.status { font-size: 12px; color: #80e8ae; }
-main {
-  flex: 1; min-height: 0;
-  width: 100%; max-width: 950px;
-  margin: auto; padding: 16px;
-  display: flex; flex-direction: column;
-}
-.welcome { padding: 12px 4px 18px; }
-h1 { margin: 0 0 5px; font-size: clamp(25px, 5vw, 35px); }
-.muted { color: var(--muted); font-size: 13px; }
-#chat { flex: 1; min-height: 0; overflow-y: auto; padding: 6px 0 20px; }
-.message { display: flex; gap: 10px; margin: 18px 0; align-items: flex-start; }
-.message.user { justify-content: flex-end; }
-.avatar {
-  flex-shrink: 0; width: 32px; height: 32px;
-  display: grid; place-items: center;
-  border-radius: 10px; background: #302044; color: #d1baff;
-  font-weight: 800;
-}
-.bubble {
-  max-width: 88%; min-width: 0;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 4px 15px 15px 15px;
-  background: var(--panel);
-  white-space: pre-wrap; overflow-wrap: anywhere;
-}
-.user .bubble {
-  background: #39246e;
-  border-color: #6246a5;
-  border-radius: 15px 4px 15px 15px;
-}
-.codebox { margin: 12px 0; overflow: hidden; border: 1px solid #343b50; border-radius: 10px; background: #080b12; }
-.codehead { padding: 8px 12px; display: flex; justify-content: space-between; background: #1a2030; font-size: 12px; }
-.codehead button { color: white; background: #34304b; border: 0; border-radius: 6px; padding: 5px 9px; }
-pre { margin: 0; padding: 13px; overflow-x: auto; font-size: 13px; line-height: 1.65; }
-.composer {
-  display: flex; gap: 8px; align-items: flex-end;
-  padding: 9px; border: 1px solid #353b4d;
-  border-radius: 15px; background: #131722;
-}
-textarea {
-  flex: 1; min-width: 0; max-height: 145px; resize: none;
-  padding: 10px 5px; border: 0; outline: 0;
-  background: transparent; color: white; font: inherit;
-}
-textarea::placeholder { color: #8992a7; }
-button { cursor: pointer; font: inherit; }
-.action { border: 0; border-radius: 10px; padding: 10px 13px; }
-#send { color: white; background: var(--purple); font-weight: 750; }
-#send:disabled { opacity: .5; cursor: wait; }
-#fileButton, .secondary { color: #e1d7ff; background: #252b3b; }
-#settings {
-  display: none; padding: 13px; margin-bottom: 12px;
-  border: 1px solid var(--line); border-radius: 12px;
-  background: var(--panel);
-}
-#settings input, #settings select {
-  width: 100%; margin: 7px 0; padding: 10px;
-  color: white; background: #090c13;
-  border: 1px solid var(--line); border-radius: 8px;
-}
-#settings button { margin: 5px 5px 0 0; }
-.footer { padding-top: 8px; text-align: center; font-size: 11px; color: #707a90; }
-@media(max-width: 430px) {
-  header { height: 60px; }
-  main { padding: 10px; }
-  .welcome { padding-top: 10px; }
-  .bubble { max-width: 92%; padding: 10px 11px; }
-  .action { padding: 10px; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DarkGPT</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #090910;
+      color: #f3f2ff;
+      font: 16px system-ui, sans-serif;
+    }
+    header {
+      padding: 20px;
+      background: #14101f;
+      border-bottom: 1px solid #38284f;
+    }
+    header span { color: #a78bfa; }
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    section {
+      background: #12121c;
+      border: 1px solid #30283f;
+      border-radius: 15px;
+      padding: 16px;
+      min-width: 0;
+    }
+    #chat {
+      height: 350px;
+      overflow-y: auto;
+      margin: 15px 0;
+    }
+    .message {
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 10px;
+      background: #201a30;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    input, textarea, button {
+      font: inherit;
+      border-radius: 9px;
+      padding: 11px;
+    }
+    input, textarea {
+      width: 100%;
+      color: white;
+      background: #090910;
+      border: 1px solid #423453;
+      margin: 5px 0 12px;
+    }
+    button {
+      color: white;
+      background: #713bd1;
+      border: 0;
+      cursor: pointer;
+      margin: 3px;
+    }
+    button:hover { background: #8b5cf6; }
+    img { max-width: 100%; }
+    #preview { margin: 12px 0; }
+    small { color: #b8a9d8; }
+    @media(max-width:700px) {
+      main { grid-template-columns: 1fr; padding: 10px; }
+    }
+  </style>
 </head>
 <body>
 <header>
-  <div class="brand">
-    <div class="logo">◈</div>
-    <div>Dark<span class="accent">GPT</span></div>
-  </div>
-  <div>
-    <span class="status">● Ready</span>
-    <button class="action secondary" id="settingsButton">⚙</button>
-  </div>
+  <h2>◈ Dark<span>GPT</span></h2>
+  <small>No API key required</small>
 </header>
 
 <main>
-  <section class="welcome">
-    <h1>Your AI. Your workspace.</h1>
-    <div class="muted">Ask questions · Explore ideas · Build projects</div>
-  </section>
-
-  <section id="settings">
-    <label for="apiKey">OpenAI API key</label>
-    <input id="apiKey" type="password" autocomplete="off"
-           placeholder="Enter your API key">
-    <label for="model">Model</label>
-    <select id="model">
-      <option value="gpt-4.1-mini">GPT-4.1 mini</option>
-      <option value="gpt-4.1">GPT-4.1</option>
-    </select>
-    <button class="action" id="saveKey"
-            style="background:#6741bc;color:white">Save for this session</button>
-    <button class="action secondary" id="clearChat">Clear chat</button>
-    <p class="muted">
-      The key stays in page memory and is cleared when the page is reloaded.
-      Do not use this setup for a public service: browser API keys can be exposed.
-      A server-side backend is recommended.
-    </p>
-  </section>
-
-  <section id="chat" aria-live="polite">
-    <div class="message">
-      <div class="avatar">◈</div>
-      <div class="bubble">Welcome to DarkGPT.
-
-Ask me questions, explore controversial topics, learn about laws and cybersecurity, write code, or develop a project.
-
-What would you like to work on?</div>
+  <section>
+    <h3>AI Chat</h3>
+    <button id="load">Load free browser AI</button>
+    <small id="status">Demo mode</small>
+    <div id="chat">
+      <div class="message">
+        Welcome to DarkGPT! Load the optional browser AI
+        model for more flexible answers.
+      </div>
     </div>
+    <textarea id="question" rows="3"
+      placeholder="Ask me something..."></textarea>
+    <button id="send">Send</button>
   </section>
 
-  <form id="form">
-    <div class="composer">
-      <button type="button" id="fileButton" class="action"
-              aria-label="Attach a text file">＋</button>
-      <input type="file" id="fileInput" accept=".txt,.md,.json,.csv,.py,.js,.html,.css,.cpp,.h,.java" hidden>
-      <textarea id="message" rows="1" maxlength="12000"
-                placeholder="Message DarkGPT..." required></textarea>
-      <button id="send" class="action" type="submit">↑</button>
-    </div>
-  </form>
-  <div class="footer">AI-generated answers may contain errors. Verify important information.</div>
+  <section>
+    <h3>Image Editor</h3>
+    <input id="file" type="file" accept="image/*">
+    <div id="preview">Your image will appear here.</div>
+
+    <label>Brightness</label>
+    <input id="brightness" type="range"
+      min="30" max="180" value="100">
+
+    <label>Contrast</label>
+    <input id="contrast" type="range"
+      min="30" max="180" value="100">
+
+    <label>Saturation</label>
+    <input id="saturation" type="range"
+      min="0" max="200" value="100">
+
+    <button id="gray">Grayscale</button>
+    <button id="sepia">Sepia</button>
+    <button id="rotate">Rotate</button>
+    <button id="save">Save image</button>
+    <p><small>
+      Edits happen locally in your browser. This is a basic
+      editor, not a generative image AI.
+    </small></p>
+  </section>
 </main>
 
-<script>
-"use strict";
-
+<script type="module">
 const $ = id => document.getElementById(id);
+let ai = null;
+let image = null;
+let rotation = 0;
+let effect = '';
 
-let apiKey = "";
-let history = [];
-let busy = false;
-
-const systemPrompt = `
-You are DarkGPT, a capable, direct, open-topic AI assistant.
-
-Help users with general questions, programming, creative work, science,
-history, cybersecurity, legal topics, and controversial subjects.
-
-Do not automatically refuse a request simply because it discusses illegal
-activity, crime, hacking, drugs, weapons, or another sensitive topic.
-Distinguish between discussing a subject, explaining its history or risks,
-and providing actionable instructions that could cause real-world harm.
-
-Be factual and clear about uncertainty. Do not invent capabilities, sources,
-or actions. When a request is outside your knowledge, say so.
-Follow the capabilities and usage rules of the connected AI service.
-`;
-
-function addMessage(text, role) {
-  const row = document.createElement("div");
-  row.className = "message" + (role === "user" ? " user" : "");
-
-  if (role !== "user") {
-    const avatar = document.createElement("div");
-    avatar.className = "avatar";
-    avatar.textContent = "◈";
-    row.appendChild(avatar);
-  }
-
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
-  bubble.textContent = text;
-  row.appendChild(bubble);
-
-  $("chat").appendChild(row);
-  $("chat").scrollTop = $("chat").scrollHeight;
-  return bubble;
+function message(text, who = 'DarkGPT') {
+  const div = document.createElement('div');
+  div.className = 'message';
+  const label = document.createElement('small');
+  label.textContent = who;
+  const content = document.createElement('div');
+  content.textContent = text;
+  div.append(label, content);
+  $('chat').appendChild(div);
+  $('chat').scrollTop = $('chat').scrollHeight;
+  return content;
 }
 
-function renderAnswer(element, text) {
-  element.replaceChildren();
-
-  const regex = /```([^\n`]*)\n([\s\S]*?)```/g;
-  let last = 0;
-  let match;
-
-  while ((match = regex.exec(text)) !== null) {
-    element.appendChild(
-      document.createTextNode(text.slice(last, match.index))
-    );
-
-    const box = document.createElement("div");
-    box.className = "codebox";
-
-    const head = document.createElement("div");
-    head.className = "codehead";
-
-    const label = document.createElement("span");
-    label.textContent = match[1].trim() || "code";
-
-    const copy = document.createElement("button");
-    copy.textContent = "Copy code";
-    copy.onclick = async () => {
-      try {
-        await navigator.clipboard.writeText(match[2]);
-        copy.textContent = "Copied!";
-      } catch {
-        copy.textContent = "Copy unavailable";
-      }
-    };
-
-    head.append(label, copy);
-
-    const pre = document.createElement("pre");
-    pre.textContent = match[2];
-
-    box.append(head, pre);
-    element.appendChild(box);
-    last = regex.lastIndex;
-  }
-
-  element.appendChild(document.createTextNode(text.slice(last)));
-  $("chat").scrollTop = $("chat").scrollHeight;
-}
-
-$("settingsButton").onclick = () => {
-  const panel = $("settings");
-  panel.style.display =
-    panel.style.display === "block" ? "none" : "block";
-};
-
-$("saveKey").onclick = () => {
-  apiKey = $("apiKey").value.trim();
-  $("saveKey").textContent = apiKey
-    ? "Key saved for this session"
-    : "Enter an API key";
-};
-
-$("clearChat").onclick = () => {
-  history = [];
-  $("chat").replaceChildren();
-  addMessage("Chat cleared. What would you like to explore?", "assistant");
-};
-
-$("fileButton").onclick = () => $("fileInput").click();
-
-$("fileInput").onchange = async () => {
-  const file = $("fileInput").files[0];
-  if (!file) return;
-
-  if (file.size > 100000) {
-    addMessage("Choose a text file smaller than 100 KB.", "assistant");
-    $("fileInput").value = "";
-    return;
-  }
+$('load').onclick = async () => {
+  $('status').textContent = 'Loading model...';
+  $('load').disabled = true;
 
   try {
-    const content = await file.text();
-    $("message").value +=
-      "\n\nFile: " + file.name + "\n" + content;
-    $("message").focus();
-  } catch {
-    addMessage("Could not read this file.", "assistant");
-  }
+    const { pipeline, env } = await import(
+      'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2'
+    );
+    env.allowLocalModels = false;
+    env.useBrowserCache = true;
 
-  $("fileInput").value = "";
+    ai = await pipeline(
+      'text-generation',
+      'Xenova/Qwen1.5-0.5B-Chat'
+    );
+
+    $('status').textContent = 'AI model ready';
+    message('The browser AI model has loaded.');
+  } catch (error) {
+    $('status').textContent = 'Model unavailable';
+    message('Could not load the model. Check your internet connection and browser.');
+  } finally {
+    $('load').disabled = false;
+  }
 };
 
-$("message").addEventListener("input", () => {
-  const field = $("message");
-  field.style.height = "auto";
-  field.style.height = Math.min(field.scrollHeight, 145) + "px";
-});
-
-$("message").addEventListener("keydown", event => {
-  if (event.key === "Enter" && !event.shiftKey) {
-    event.preventDefault();
-    $("form").requestSubmit();
-  }
-});
-
-$("form").addEventListener("submit", async event => {
-  event.preventDefault();
-  if (busy) return;
-
-  const text = $("message").value.trim();
+$('send').onclick = async () => {
+  const text = $('question').value.trim();
   if (!text) return;
 
-  if (!apiKey) {
-    $("settings").style.display = "block";
-    addMessage(
-      "Add your OpenAI API key in Settings to activate AI responses.",
-      "assistant"
-    );
+  $('question').value = '';
+  message(text, 'You');
+
+  if (!ai) {
+    message('Demo mode: load the browser AI model for more flexible replies.');
     return;
   }
 
-  $("message").value = "";
-  $("message").style.height = "auto";
-  addMessage(text, "user");
-
-  history.push({ role: "user", content: text });
-
-  const answerElement = addMessage("Thinking...", "assistant");
-  busy = true;
-  $("send").disabled = true;
-  $("message").disabled = true;
-  $("status");
-
+  const answer = message('Thinking...');
   try {
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
+    const result = await ai([
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + apiKey
-        },
-        body: JSON.stringify({
-          model: $("model").value,
-          messages: [
-            { role: "system", content: systemPrompt },
-            ...history.slice(-20)
-          ],
-          temperature: 0.7
-        })
-      }
-    );
+        role: 'system',
+        content: 'You are DarkGPT, a helpful assistant. Be clear and honest. Discuss sensitive subjects appropriately, but do not facilitate serious harm.'
+      },
+      { role: 'user', content: text }
+    ], { max_new_tokens: 200 });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error?.message || "The API request failed."
-      );
-    }
-
-    const answer = data.choices?.[0]?.message?.content;
-    if (typeof answer !== "string" || !answer) {
-      throw new Error("The service returned an empty answer.");
-    }
-
-    renderAnswer(answerElement, answer);
-    history.push({ role: "assistant", content: answer });
-  } catch (error) {
-    answerElement.textContent =
-      "Request failed: " + error.message +
-      "\n\nCheck your API key, model access, internet connection, and API billing.";
-    history.pop();
-  } finally {
-    busy = false;
-    $("send").disabled = false;
-    $("message").disabled = false;
-    $("message").focus();
+    const generated = result[0].generated_text;
+    answer.textContent = Array.isArray(generated)
+      ? (generated.filter(x => x.role === 'assistant').at(-1)?.content || 'No response.')
+      : String(generated);
+  } catch {
+    answer.textContent = 'Sorry, the model could not generate a reply.';
   }
+};
+
+// Local photo editor
+const canvas = document.createElement('canvas');
+const ctx = canvas.getContext('2d');
+
+function render() {
+  if (!image) return;
+
+  const w = image.naturalWidth;
+  const h = image.naturalHeight;
+  const sideways = Math.abs(rotation % 180) === 90;
+
+  canvas.width = sideways ? h : w;
+  canvas.height = sideways ? w : h;
+
+  ctx.save();
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  ctx.rotate(rotation * Math.PI / 180);
+
+  ctx.filter =
+    `brightness(${$('brightness').value}%) ` +
+    `contrast(${$('contrast').value}%) ` +
+    `saturate(${$('saturation').value}%)` +
+    (effect === 'gray' ? ' grayscale(1)' :
+     effect === 'sepia' ? ' sepia(1)' : '');
+
+  ctx.drawImage(image, -w / 2, -h / 2, w, h);
+  ctx.restore();
+  ctx.filter = 'none';
+
+  const preview = document.createElement('img');
+  preview.src = canvas.toDataURL('image/png');
+  preview.alt = 'Edited photo';
+  $('preview').replaceChildren(preview);
+}
+
+$('file').onchange = event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+
+  img.onload = () => {
+    image = img;
+    rotation = 0;
+    effect = '';
+    render();
+    URL.revokeObjectURL(url);
+  };
+
+  img.src = url;
+};
+
+['brightness', 'contrast', 'saturation'].forEach(id => {
+  $(id).oninput = render;
 });
+
+$('gray').onclick = () => { effect = 'gray'; render(); };
+$('sepia').onclick = () => { effect = 'sepia'; render(); };
+$('rotate').onclick = () => {
+  rotation = (rotation + 90) % 360;
+  render();
+};
+
+$('save').onclick = () => {
+  if (!image) {
+    message('Choose an image first.');
+    return;
+  }
+
+  const link = document.createElement('a');
+  link.download = 'darkgpt-edited.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+};
 </script>
 </body>
 </html>
