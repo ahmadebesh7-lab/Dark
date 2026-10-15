@@ -1,286 +1,321 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10091c">
 <title>DarkGPT</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0811;--panel:#171120;--purple:#a66cff;--border:#38254d}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top,#29153e,var(--bg) 65%);color:#f7f0ff;font:16px system-ui,sans-serif}
-header{position:sticky;top:0;background:#100b19ed;border-bottom:1px solid var(--border);padding:15px;display:flex;justify-content:space-between;align-items:center;z-index:2}
-h1{font-size:23px;margin:0}h1 span{color:var(--purple)}
+:root{color-scheme:dark;--purple:#a875ff;--panel:#171120;--line:#3b2b50}
+body{margin:0;background:radial-gradient(ellipse at top,#2b1741,#090810 65%);color:#f7f0ff;font:16px system-ui,sans-serif}
+header{position:sticky;top:0;z-index:2;background:#100b19ee;border-bottom:1px solid var(--line);padding:14px;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:22px;margin:0}h1 span{color:var(--purple)}
 #status{font-size:12px;color:#d2b9ff}
-main{max-width:850px;margin:auto;padding:14px}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;margin-bottom:16px;overflow:hidden}
+main{max-width:1000px;margin:auto;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;overflow:hidden;min-width:0}
 h2{font-size:17px;padding:0 14px}
-#chat{height:48vh;min-height:280px;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
-.msg{padding:11px 13px;border-radius:13px;max-width:95%;white-space:pre-wrap;overflow-wrap:anywhere}
-.bot{background:#251a32;align-self:flex-start}.user{background:#492477;align-self:flex-end}
-.composer{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border)}
+#chat{height:52vh;min-height:280px;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:95%;padding:11px 13px;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{background:#251c31;align-self:flex-start}.user{background:#482477;align-self:flex-end}
+.composer{display:flex;gap:7px;padding:10px;border-top:1px solid var(--line)}
 textarea,input,button{font:inherit}
-textarea,input{background:#0e0a14;color:white;border:1px solid #59416e;border-radius:10px;padding:11px;width:100%;min-width:0}
-textarea{resize:vertical;min-height:46px}
-button{background:#30203e;color:white;border:1px solid #68468a;border-radius:10px;padding:10px 14px;cursor:pointer}
-button:disabled{opacity:.5}
-.primary{background:linear-gradient(135deg,#a66cff,#7135c8);border:0}
-.note{font-size:12px;color:#bdb0cd;padding:0 14px 14px}
-.tools{padding:14px;display:grid;gap:13px}
+textarea,input{width:100%;min-width:0;background:#0c0911;color:white;border:1px solid #59436d;border-radius:10px;padding:10px}
+textarea{resize:vertical;min-height:45px}
+button{background:#30203e;color:white;border:1px solid #69468a;border-radius:10px;padding:10px 12px;cursor:pointer}
+.primary{background:linear-gradient(135deg,#a875ff,#6c35c5);border:0}
+.note{font-size:12px;color:#bcb0cb;padding:0 12px 12px}
+.tools{padding:12px;display:grid;gap:12px}
 label{font-size:13px;display:block;margin-bottom:5px}
-.preview{min-height:130px;border:1px solid var(--border);border-radius:10px;display:grid;place-items:center;overflow:hidden;color:#bdb0cd}
-.preview img{max-width:100%;max-height:350px}
-.range{display:flex;gap:10px;align-items:center}
-.range input{padding:0}
-.buttons{display:flex;gap:8px;flex-wrap:wrap}
-.buttons button{flex:1}
-footer{text-align:center;padding:15px;color:#a99ab9;font-size:12px}
-@media(max-width:500px){header{padding:12px}#chat{height:46vh}.composer{gap:6px}.composer button{padding:9px}}
+.preview{min-height:140px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;overflow:hidden;color:#bcb0cb;padding:5px}
+.preview img{max-width:100%;max-height:330px}
+.range{display:flex;align-items:center;gap:8px}.range input{padding:0}
+.buttons{display:flex;gap:7px;flex-wrap:wrap}.buttons button{flex:1}
+footer{text-align:center;font-size:12px;color:#bcb0cb;padding:16px}
+@media(max-width:750px){main{grid-template-columns:1fr}#chat{height:43vh}}
 </style>
 </head>
 <body>
 <header>
-  <h1>◈ Dark<span>GPT</span></h1>
-  <div id="status">Ready</div>
+<h1>◈ Dark<span>GPT</span></h1>
+<div id="status">Ready</div>
 </header>
 
 <main>
 <section class="panel">
-  <h2>Chat with DarkGPT</h2>
-  <div id="chat">
-    <div class="msg bot">Hey! I'm DarkGPT. Send me a message to start. I'll try to start the AI automatically.</div>
-  </div>
-  <div class="composer">
-    <textarea id="question" rows="1" placeholder="Message DarkGPT..."></textarea>
-    <button id="send" class="primary">Send</button>
-  </div>
-  <div class="note">No API key. The first message starts downloading the local AI model. Keep this page open while it loads.</div>
+<h2>Chat with DarkGPT</h2>
+<div id="chat">
+<div class="msg bot">Welcome to DarkGPT! Send a message to start chatting. The AI will try to start automatically.</div>
+</div>
+<div class="composer">
+<textarea id="question" placeholder="Message DarkGPT..." rows="2"></textarea>
+<button id="send" class="primary">Send</button>
+</div>
+<div class="note">No API key. Local AI requires internet to download its model and may not run on every phone. Messages will not remain stuck waiting for it.</div>
 </section>
 
 <section class="panel">
-  <h2>Image Studio</h2>
-  <div class="tools">
-    <div><label for="file">Choose a picture</label><input id="file" type="file" accept="image/*"></div>
-    <div id="preview" class="preview">Your picture appears here.</div>
-    <div><label for="edit">Describe an edit</label><input id="edit" placeholder="make brighter, sepia, grayscale..."></div>
-    <button id="apply" class="primary">Apply edit</button>
-    <div><label for="bright">Brightness</label><div class="range"><input id="bright" type="range" min="30" max="180" value="100"><output id="brightOut">100%</output></div></div>
-    <div><label for="contrast">Contrast</label><div class="range"><input id="contrast" type="range" min="30" max="180" value="100"><output id="contrastOut">100%</output></div></div>
-    <div><label for="sat">Saturation</label><div class="range"><input id="sat" type="range" min="0" max="200" value="100"><output id="satOut">100%</output></div></div>
-    <div class="buttons"><button id="gray">Grayscale</button><button id="sepia">Sepia</button><button id="rotate">Rotate 90°</button></div>
-    <div class="buttons"><button id="reset">Reset</button><button id="save" class="primary">Save PNG</button></div>
-    <div class="note">Edits run locally in your browser. This editor applies visual filters; it does not generate entirely new image content.</div>
-  </div>
+<h2>Image Studio</h2>
+<div class="tools">
+<div><label for="file">Upload picture</label><input id="file" type="file" accept="image/*"></div>
+<div id="preview" class="preview">Your picture preview appears here.</div>
+<div><label for="edit">Describe a supported edit</label><input id="edit" placeholder="make brighter, sepia, grayscale..."></div>
+<button id="apply" class="primary">Apply edit</button>
+<div><label for="bright">Brightness</label><div class="range"><input id="bright" type="range" min="30" max="180" value="100"><output id="brightOut">100%</output></div></div>
+<div><label for="contrast">Contrast</label><div class="range"><input id="contrast" type="range" min="30" max="180" value="100"><output id="contrastOut">100%</output></div></div>
+<div><label for="sat">Saturation</label><div class="range"><input id="sat" type="range" min="0" max="200" value="100"><output id="satOut">100%</output></div></div>
+<div class="buttons"><button id="gray">Grayscale</button><button id="sepia">Sepia</button><button id="rotate">Rotate 90°</button></div>
+<div class="buttons"><button id="reset">Reset</button><button id="save" class="primary">Save PNG</button></div>
+<div class="note">This editor applies safe visual filters locally. It cannot generate new content or remove a person's clothes.</div>
+</div>
 </section>
 </main>
-<footer>DarkGPT · Private, local image editing</footer>
+<footer>DarkGPT · Local image editing</footer>
 
 <script type="module">
 const $=id=>document.getElementById(id);
 const chat=$('chat');
-let ai=null,loading=null,queue=[],busy=false;
-let photo=null,angle=0,effect='none',fileName='darkgpt-edited.png';
+let model=null,loadPromise=null,modelFailed=false;
+let image=null,angle=0,effect='none';
+let filename='darkgpt-edited.png';
 
-function addMessage(text,who='bot'){
-  const el=document.createElement('div');
-  el.className='msg '+who;
-  el.textContent=text;
-  chat.appendChild(el);
-  chat.scrollTop=chat.scrollHeight;
-  return el;
+function add(text,who='bot'){
+ const el=document.createElement('div');
+ el.className='msg '+who;
+ el.textContent=text;
+ chat.appendChild(el);
+ chat.scrollTop=chat.scrollHeight;
+ return el;
 }
 
-function demo(text){
-  const t=text.toLowerCase();
-  if(/\b(hi|hello|hey)\b/.test(t))return 'Hey! What would you like to talk about?';
-  if(/what can you do|help/.test(t))return 'I can chat when the local AI model runs successfully. I can also help you use the Image Studio to adjust brightness, contrast, saturation, grayscale, sepia and rotation.';
-  if(/image|photo|picture/.test(t))return 'Upload a picture in Image Studio, choose your adjustments, then tap Save PNG.';
-  return 'The AI model could not start in this browser, so I can only give limited demo replies right now. Try a newer browser or a device with more free memory.';
+// Simple fallback: it answers immediately when the local model is unavailable.
+function fallback(text){
+ const t=text.toLowerCase().trim();
+ if(/^(hi|hello|hey|yo)\b/.test(t))return 'Hey! What would you like to talk about?';
+ if(/what can you do|help|features/.test(t))return 'I can answer using a local AI model if your browser supports it. I can also edit image brightness, contrast, saturation, rotation, grayscale and sepia.';
+ if(/image|photo|picture/.test(t))return 'Upload your picture in Image Studio, choose an adjustment, and tap Save PNG.';
+ if(/who are you|your name/.test(t))return 'I am DarkGPT, a dark-themed chatbot demo.';
+ if(/illegal|crime|hack/.test(t))return 'I can discuss laws, cybersecurity, history and risks. I cannot help carry out serious harm or wrongdoing.';
+ if(/thank/.test(t))return 'You’re welcome!';
+ return 'I received your message. The local AI is not ready, so this is a limited fallback reply. Try again after the model finishes loading, or refresh if the model failed.';
 }
 
-async function startAI(){
-  if(ai)return ai;
-  if(loading)return loading;
+// Load in the background, without blocking chat.
+function startAI(){
+ if(model)return Promise.resolve(true);
+ if(modelFailed)return Promise.resolve(false);
+ if(loadPromise)return loadPromise;
 
-  $('status').textContent='Starting AI…';
+ $('status').textContent='Starting AI…';
 
-  loading=(async()=>{
-    try{
-      const {pipeline,env}=await import(
-        'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2'
-      );
-      env.allowLocalModels=false;
-      env.useBrowserCache=true;
-
-      const task=pipeline(
-        'text-generation',
-        'Xenova/Qwen1.5-0.5B-Chat',
-        {progress_callback:p=>{
-          if(p.status==='progress'&&p.total){
-            $('status').textContent='Downloading '+Math.round(p.loaded/p.total*100)+'%';
-          }else if(p.status==='downloading'){
-            $('status').textContent='Downloading AI…';
-          }
-        }}
-      );
-
-      const timeout=new Promise((_,reject)=>setTimeout(
-        ()=>reject(new Error('AI startup timed out')),60000
-      ));
-
-      ai=await Promise.race([task,timeout]);
-      $('status').textContent='AI ready';
-      return ai;
-    }catch(err){
-      console.error('AI startup failed:',err);
-      $('status').textContent='Demo mode';
-      loading=null;
-      return null;
-    }
-  })();
-
-  return loading;
-}
-
-async function answer(text,el){
-  const model=ai||await startAI();
-  if(!model){
-    el.textContent=demo(text);
-    return;
-  }
-
-  el.textContent='Thinking…';
+ loadPromise=(async()=>{
   try{
-    const result=await model(text,{
-      max_new_tokens:180,
-      temperature:0.7,
-      do_sample:true,
-      return_full_text:false
-    });
-    el.textContent=result?.[0]?.generated_text?.trim()||'I could not generate a reply.';
+   const {pipeline,env}=await import(
+    'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2'
+   );
+   env.allowLocalModels=false;
+   env.useBrowserCache=true;
+
+   const timeout=new Promise((_,reject)=>{
+    setTimeout(()=>reject(new Error('AI loading timed out')),45000);
+   });
+
+   const task=pipeline(
+    'text-generation',
+    'Xenova/Qwen1.5-0.5B-Chat',
+    {progress_callback:p=>{
+      if(p.status==='progress'&&p.total){
+       $('status').textContent='Downloading '+Math.round(100*p.loaded/p.total)+'%';
+      }else if(p.status==='downloading'){
+       $('status').textContent='Downloading AI…';
+      }
+    }}
+   );
+
+   model=await Promise.race([task,timeout]);
+   $('status').textContent='AI ready';
+   add('The local AI is ready for your next message.');
+   return true;
   }catch(err){
-    console.error(err);
-    el.textContent='The local model could not answer this message. Try again.';
+   console.error('Local AI failed:',err);
+   modelFailed=true;
+   $('status').textContent='Fallback mode';
+   return false;
   }
+ })();
+
+ return loadPromise;
 }
 
-async function processQueue(){
-  if(busy)return;
-  busy=true;
-  $('send').disabled=true;
+async function getAnswer(text,el){
+ if(!model){
+  el.textContent=fallback(text);
+  return;
+ }
+ el.textContent='Thinking…';
 
-  try{
-    while(queue.length){
-      const item=queue.shift();
-      await answer(item.text,item.el);
-    }
-  }finally{
-    busy=false;
-    $('send').disabled=false;
-    $('question').focus();
-  }
+ try{
+  const prompt=
+   'You are DarkGPT, a friendly and helpful assistant. '+
+   'Give clear, useful answers. Discuss sensitive topics responsibly. '+
+   'Do not provide actionable instructions for serious harm.\n\n'+
+   'User: '+text+'\nAssistant:';
+
+  const result=await model(prompt,{
+   max_new_tokens:180,
+   temperature:0.7,
+   do_sample:true,
+   return_full_text:false
+  });
+
+  const answer=result?.[0]?.generated_text;
+  el.textContent=typeof answer==='string'&&answer.trim()
+   ?answer.trim()
+   :'The model did not produce a response. Please try again.';
+ }catch(err){
+  console.error('Generation failed:',err);
+  el.textContent='The AI could not answer this message. Try another message or refresh the page.';
+ }
 }
 
-function send(){
-  const text=$('question').value.trim();
-  if(!text)return;
-  $('question').value='';
-  const el=addMessage('Trying to start AI…');
-  // Preserve each message while the first model download is underway.
-  queue.push({text,el});
-  const userMessages=[...chat.querySelectorAll('.msg.bot')];
-  const lastUser=chat.lastElementChild;
-  if(lastUser===el){
-    const u=document.createElement('div');
-    u.className='msg user';
-    u.textContent=text;
-    chat.insertBefore(u,el);
-  }
-  chat.scrollTop=chat.scrollHeight;
-  processQueue();
-}
-
-$('send').addEventListener('click',send);
+$('send').addEventListener('click',sendMessage);
 $('question').addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}
+ if(e.key==='Enter'&&!e.shiftKey){
+  e.preventDefault();
+  sendMessage();
+ }
 });
 
-// Image editor
+async function sendMessage(){
+ const text=$('question').value.trim();
+ if(!text)return;
+ $('question').value='';
+ add(text,'user');
+ const answer=add('Preparing a reply…');
+
+ // Start the download, but do not make this message wait for it.
+ if(!model&&!modelFailed)startAI();
+
+ // If AI is already ready, use it. Otherwise answer now instead of spinning.
+ await getAnswer(text,answer);
+}
+
+// IMAGE EDITOR
 const canvas=document.createElement('canvas');
 const ctx=canvas.getContext('2d');
 
 function render(){
-  if(!photo)return;
-  const w=photo.naturalWidth,h=photo.naturalHeight;
-  const sideways=Math.abs(angle%180)===90;
-  canvas.width=sideways?h:w;
-  canvas.height=sideways?w:h;
-  ctx.save();
-  ctx.translate(canvas.width/2,canvas.height/2);
-  ctx.rotate(angle*Math.PI/180);
-  let filters=`brightness(${$('bright').value}%) contrast(${$('contrast').value}%) saturate(${$('sat').value}%)`;
-  if(effect==='gray')filters+=' grayscale(1)';
-  if(effect==='sepia')filters+=' sepia(1)';
-  ctx.filter=filters;
-  ctx.drawImage(photo,-w/2,-h/2,w,h);
-  ctx.restore();
-  ctx.filter='none';
+ if(!image)return;
+ const w=image.naturalWidth,h=image.naturalHeight;
+ const sideways=Math.abs(angle%180)===90;
+ canvas.width=sideways?h:w;
+ canvas.height=sideways?w:h;
 
-  const img=new Image();
-  img.alt='Edited picture';
-  img.src=canvas.toDataURL('image/png');
-  $('preview').replaceChildren(img);
+ ctx.save();
+ ctx.translate(canvas.width/2,canvas.height/2);
+ ctx.rotate(angle*Math.PI/180);
+ ctx.filter=
+  `brightness(${$('bright').value}%) `+
+  `contrast(${$('contrast').value}%) `+
+  `saturate(${$('sat').value}%)`+
+  (effect==='gray'?' grayscale(1)':effect==='sepia'?' sepia(1)':'');
+ ctx.drawImage(image,-w/2,-h/2,w,h);
+ ctx.restore();
+ ctx.filter='none';
+
+ const preview=document.createElement('img');
+ preview.alt='Edited image';
+ preview.src=canvas.toDataURL('image/png');
+ $('preview').replaceChildren(preview);
 }
 
 function update(){
-  for(const id of ['bright','contrast','sat'])$(id+'Out').textContent=$(id).value+'%';
-  render();
+ for(const id of ['bright','contrast','sat']){
+  $(id+'Out').textContent=$(id).value+'%';
+ }
+ render();
 }
 
 $('file').addEventListener('change',e=>{
-  const file=e.target.files?.[0];
-  if(!file)return;
-  if(!file.type.startsWith('image/')){addMessage('Please choose an image file.');return;}
-  fileName=(file.name.replace(/\.[^.]+$/,'')||'picture')+'-edited.png';
-  const url=URL.createObjectURL(file),img=new Image();
-  img.onload=()=>{
-    photo=img;angle=0;effect='none';
-    $('bright').value=100;$('contrast').value=100;$('sat').value=100;
-    update();URL.revokeObjectURL(url);
-  };
-  img.onerror=()=>{addMessage('Could not open that picture.');URL.revokeObjectURL(url);};
-  img.src=url;
+ const file=e.target.files?.[0];
+ if(!file)return;
+ if(!file.type.startsWith('image/')){
+  add('Please choose a valid image file.');
+  return;
+ }
+ filename=(file.name.replace(/\.[^.]+$/,'')||'image')+'-edited.png';
+ const url=URL.createObjectURL(file);
+ const img=new Image();
+
+ img.onload=()=>{
+  image=img;angle=0;effect='none';
+  $('bright').value=100;
+  $('contrast').value=100;
+  $('sat').value=100;
+  update();
+  URL.revokeObjectURL(url);
+ };
+ img.onerror=()=>{
+  add('This image could not be opened.');
+  URL.revokeObjectURL(url);
+ };
+ img.src=url;
 });
 
-['bright','contrast','sat'].forEach(id=>$(id).addEventListener('input',update));
+['bright','contrast','sat'].forEach(id=>{
+ $(id).addEventListener('input',update);
+});
+
 $('gray').onclick=()=>{effect='gray';render();};
 $('sepia').onclick=()=>{effect='sepia';render();};
 $('rotate').onclick=()=>{angle=(angle+90)%360;render();};
+
 $('reset').onclick=()=>{
-  angle=0;effect='none';
-  $('bright').value=100;$('contrast').value=100;$('sat').value=100;
-  update();
+ angle=0;effect='none';
+ $('bright').value=100;
+ $('contrast').value=100;
+ $('sat').value=100;
+ update();
 };
+
 $('apply').onclick=()=>{
-  if(!photo){addMessage('Upload a picture first.');return;}
-  const t=$('edit').value.toLowerCase();
-  if(/grayscale|black and white|monochrome/.test(t))effect='gray';
-  else if(/sepia|vintage/.test(t))effect='sepia';
-  else if(/brighter|brighten|lighter/.test(t))$('bright').value=130;
-  else if(/darker|darken/.test(t))$('bright').value=75;
-  else if(/contrast/.test(t))$('contrast').value=135;
-  else if(/desaturat/.test(t))$('sat').value=35;
-  else if(/saturat|vivid|colorful/.test(t))$('sat').value=150;
-  else if(/rotate left|counter.?clockwise/.test(t))angle=(angle+270)%360;
-  else if(/rotate right|clockwise|rotate 90/.test(t))angle=(angle+90)%360;
-  else{addMessage('Try “make brighter”, “grayscale”, “sepia”, “increase contrast” or “rotate left”.');return;}
-  update();
+ if(!image){add('Upload a picture first.');return;}
+ const t=$('edit').value.toLowerCase();
+
+ if(/grayscale|black and white|monochrome/.test(t)){
+  effect='gray';
+ }else if(/sepia|vintage/.test(t)){
+  effect='sepia';
+ }else if(/brighter|brighten|lighter/.test(t)){
+  $('bright').value=130;
+ }else if(/darker|darken/.test(t)){
+  $('bright').value=75;
+ }else if(/contrast/.test(t)){
+  $('contrast').value=135;
+ }else if(/desaturat/.test(t)){
+  $('sat').value=35;
+ }else if(/saturat|vivid|colorful/.test(t)){
+  $('sat').value=150;
+ }else if(/rotate left|counter.?clockwise/.test(t)){
+  angle=(angle+270)%360;
+ }else if(/rotate right|clockwise|rotate 90/.test(t)){
+  angle=(angle+90)%360;
+ }else{
+  add('Try “make brighter”, “grayscale”, “sepia”, “increase contrast”, “desaturate” or “rotate left”.');
+  return;
+ }
+
+ update();
+ add('Image adjustment applied.');
 };
+
 $('save').onclick=()=>{
-  if(!photo){addMessage('Upload a picture first.');return;}
-  const a=document.createElement('a');
-  a.download=fileName;a.href=canvas.toDataURL('image/png');a.click();
+ if(!image){add('Upload a picture first.');return;}
+ const a=document.createElement('a');
+ a.download=filename;
+ a.href=canvas.toDataURL('image/png');
+ a.click();
 };
 </script>
 </body>
