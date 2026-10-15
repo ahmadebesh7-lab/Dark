@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b10">
+<title>DarkGPT</title>
+<style>
+:root{color-scheme:dark;--bg:#090b10;--panel:#131722;--line:#272e40;--purple:#9060ff;--text:#f4f5fc;--muted:#a2abc0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,sans-serif;height:100dvh;display:flex;flex-direction:column}
+header{height:72px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-bottom:1px solid var(--line);background:#0c0f17}
+.brand{display:flex;align-items:center;gap:11px;font-size:25px;font-weight:850;letter-spacing:-1px}
+.logo{width:38px;height:38px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(140deg,#c6a8ff,#6930eb);color:#100b20;font-size:22px}
+.brand span span{color:#a98aff}
+.online{font-size:12px;color:#80efb1;border:1px solid #23513e;border-radius:20px;padding:6px 10px}
+main{width:100%;max-width:1000px;margin:auto;flex:1;min-height:0;display:flex;flex-direction:column;padding:18px}
+.welcome{padding:20px 8px 16px}
+h1{font-size:clamp(25px,5vw,36px);letter-spacing:-1px;margin:0 0 5px}
+.subtitle{margin:0;color:var(--muted);font-size:14px}
+#chat{flex:1;min-height:0;overflow-y:auto;padding:8px 2px 20px;scroll-behavior:smooth}
+.message{display:flex;gap:10px;margin:18px 0;align-items:flex-start}
+.message.user{justify-content:flex-end}
+.avatar{width:32px;height:32px;flex-shrink:0;border-radius:11px;background:#28203d;color:#c4a9ff;display:grid;place-items:center;font-weight:800}
+.bubble{max-width:min(85%,720px);padding:13px 15px;border:1px solid var(--line);border-radius:5px 17px 17px 17px;background:var(--panel);overflow-wrap:anywhere;white-space:pre-wrap}
+.user .bubble{background:linear-gradient(135deg,#5530b5,#382078);border-color:#6543bd;border-radius:17px 5px 17px 17px}
+.code{margin:12px 0;border:1px solid #333b50;border-radius:12px;overflow:hidden;background:#080b12}
+.codebar{display:flex;justify-content:space-between;padding:9px 12px;background:#171c2a;color:#b9c2d8;font-size:12px}
+.codebar button{background:#292e40;color:white;border:0;border-radius:7px;padding:5px 10px}
+pre{margin:0;padding:14px;overflow:auto;white-space:pre;font-size:13px;line-height:1.7;color:#d4d9ef}
+.composer{flex-shrink:0;border:1px solid #30374b;background:#121622;border-radius:16px;padding:9px;display:flex;gap:9px;align-items:flex-end}
+textarea{flex:1;min-width:0;max-height:150px;resize:none;background:transparent;color:white;border:0;outline:0;padding:10px 7px;font:inherit}
+textarea::placeholder{color:#858da6}
+button{font:inherit;cursor:pointer}
+#send{border:0;border-radius:11px;padding:11px 16px;background:var(--purple);color:white;font-weight:750}
+#send:disabled{opacity:.5}
+#attach{border:0;border-radius:10px;background:#242a3a;color:#d4c7ff;padding:11px}
+.note{text-align:center;font-size:11px;color:#707a91;padding:8px 0 0}
+#settings{display:none;background:#151a27;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+#settings input{width:100%;margin-top:6px;background:#090c13;color:white;border:1px solid var(--line);padding:10px;border-radius:8px}
+#settings button{margin-top:9px;background:#3b2a67;border:0;color:white;padding:9px 12px;border-radius:8px}
+.toolbar{display:flex;gap:8px;align-items:center}
+.iconbtn{background:transparent;color:#c8cde0;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+@media(min-width:700px){main{padding:22px}.welcome{padding-top:26px}}
+@media(max-width:430px){header{height:62px;padding:0 13px}.brand{font-size:22px}.logo{width:34px;height:34px}.online{font-size:11px;padding:5px 8px}main{padding:10px}.welcome{padding:16px 5px 10px}.bubble{max-width:91%;padding:11px 12px}#send{padding:11px 13px}.note{font-size:10px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">◈</div><span>Dark<span>GPT</span></span></div>
+ <div class="toolbar">
+  <span class="online">● Online</span>
+  <button class="iconbtn" id="settingsBtn" aria-label="Settings">⚙</button>
+ </div>
+</header>
+<main>
+ <section class="welcome">
+  <h1>Your AI workspace.</h1>
+  <p class="subtitle">Ask questions. Write code. Build something new.</p>
+ </section>
+ <section id="settings">
+  <label for="apiKey">AI provider API key</label>
+  <input id="apiKey" type="password" autocomplete="off" placeholder="Paste API key for this session">
+  <button id="saveKey">Use key for this session</button>
+  <p class="subtitle">The key is kept in memory while this page remains open. For a public website, use a backend to protect your key.</p>
+ </section>
+ <section id="chat" aria-live="polite">
+  <div class="message">
+   <div class="avatar">◈</div>
+   <div class="bubble">Hey! I'm DarkGPT. 👋
+
+I can answer questions, help write code, explain errors, and help you plan projects.
+
+What are we building today?</div>
+  </div>
+ </section>
+ <form id="form">
+  <div class="composer">
+   <button id="attach" type="button" aria-label="Add text file">＋</button>
+   <input id="fileInput" type="file" hidden>
+   <textarea id="message" rows="1" maxlength="12000" placeholder="Ask DarkGPT anything..." required></textarea>
+   <button id="send" type="submit">↑ Send</button>
+  </div>
+ </form>
+ <div class="note">DarkGPT can make mistakes. Check important information.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let apiKey="";
+let history=[];
+
+function addMessage(text,role){
+ const row=document.createElement("div");
+ row.className="message "+(role==="user"?"user":"");
+ if(role!=="user"){
+  const avatar=document.createElement("div");
+  avatar.className="avatar";
+  avatar.textContent="◈";
+  row.appendChild(avatar);
+ }
+ const bubble=document.createElement("div");
+ bubble.className="bubble";
+ bubble.textContent=text;
+ row.appendChild(bubble);
+ $("chat").appendChild(row);
+ $("chat").scrollTop=$("chat").scrollHeight;
+ return bubble;
+}
+
+function addCode(parent,code,lang){
+ const wrap=document.createElement("div");
+ wrap.className="code";
+ const bar=document.createElement("div");
+ bar.className="codebar";
+ const label=document.createElement("span");
+ label.textContent=lang||"code";
+ const copy=document.createElement("button");
+ copy.textContent="Copy code";
+ copy.onclick=async()=>{
+  try{await navigator.clipboard.writeText(code);copy.textContent="Copied";}
+  catch{copy.textContent="Select code to copy";}
+ };
+ bar.append(label,copy);
+ const pre=document.createElement("pre");
+ pre.textContent=code;
+ wrap.append(bar,pre);
+ parent.appendChild(wrap);
+}
+
+function renderAnswer(parent,text){
+ const parts=text.split(/```([\w+-]*)\n([\s\S]*?)```/g);
+ parent.textContent="";
+ for(let i=0;i<parts.length;){
+  if(i%3===0){
+   if(parts[i])parent.appendChild(document.createTextNode(parts[i]));
+   i++;
+  }else{
+   const lang=parts[i]||"code";
+   const code=parts[i+1]||"";
+   addCode(parent,code,lang);
+   i+=2;
+  }
+ }
+}
+
+$("settingsBtn").onclick=()=>{
+ $("settings").style.display=$("settings").style.display==="block"?"none":"block";
+};
+$("saveKey").onclick=()=>{
+ apiKey=$("apiKey").value.trim();
+ $("saveKey").textContent=apiKey?"Key set for this session":"Enter an API key";
+};
+$("attach").onclick=()=>$("fileInput").click();
+$("fileInput").onchange=async()=>{
+ const file=$("fileInput").files[0];
+ if(!file)return;
+ if(file.size>100000) {addMessage("Please select a text file smaller than 100 KB.","assistant");return;}
+ try{
+  const text=await file.text();
+  $("message").value+="\n\nFile: "+file.name+"\n"+text;
+  $("message").focus();
+ }catch{addMessage("Could not read that file.","assistant");}
+};
+
+$("message").addEventListener("input",()=>{
+ $("message").style.height="auto";
+ $("message").style.height=Math.min($("message").scrollHeight,150)+"px";
+});
+$("message").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();$("form").requestSubmit();}
+});
+
+$("form").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const message=$("message").value.trim();
+ if(!message)return;
+ $("message").value="";
+ $("message").style.height="auto";
+ addMessage(message,"user");
+ history.push({role:"user",content:message});
+ const bubble=addMessage("Thinking...","assistant");
+ $("send").disabled=true;
+ try{
+  if(!apiKey){
+   bubble.textContent="To activate AI responses, open ⚙ Settings and add your provider API key. This GitHub Pages version displays the interface, but needs an AI service connection to generate real answers.";
+   history.pop();
+   return;
+  }
+  const response=await fetch("https://api.openai.com/v1/chat/completions",{
+   method:"POST",
+   headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},
+   body:JSON.stringify({
+    model:"gpt-4.1-mini",
+    messages:[
+     {role:"system",content:"You are DarkGPT, a helpful AI assistant for answering questions, writing and explaining code, and planning projects. Be accurate and concise."},
+     ...history.slice(-10)
+    ],
+    temperature:0.7
+   })
+  });
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error?.message||"API request failed");
+  const answer=data.choices?.[0]?.message?.content||"No response returned.";
+  renderAnswer(bubble,answer);
+  history.push({role:"assistant",content:answer});
+ }catch(err){
+  bubble.textContent="Could not get an answer: "+err.message;
+  history.pop();
+ }finally{
+  $("send").disabled=false;
+  $("message").focus();
+ }
+});
+</script>
+</body>
+</html>
